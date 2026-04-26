@@ -16,4 +16,13 @@ class Category extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($category) {
+            if ($category->products()->withTrashed()->exists()) {
+                throw new \Exception('Нельзя удалить категорию, в которой есть товары (включая удаленные в корзину).');
+            }
+        });
+    }
 }
