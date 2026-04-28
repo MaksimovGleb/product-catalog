@@ -18,11 +18,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Создаем администратора
-        User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            ]
+        );
 
         // Создаем категории и товары
         Category::factory(5)->create()->each(function ($category) {
