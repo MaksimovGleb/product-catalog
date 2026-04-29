@@ -19,14 +19,16 @@ class ProductController extends Controller
     /** Публичный список товаров. */
     public function index(Request $request)
     {
-        $products = Product::when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
+        $products = Product::query()
+            ->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
+            ->when($request->search, fn($q) => $q->where('name', 'like', "%{$request->search}%"))
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Products/Index', [
             'products' => ProductResource::collection($products),
             'categories' => CategoryResource::collection(Category::all()),
-            'filters' => $request->only(['category_id']),
+            'filters' => $request->only(['category_id', 'search']),
         ]);
     }
 
@@ -41,14 +43,16 @@ class ProductController extends Controller
     /** Список товаров для админки. */
     public function adminIndex(Request $request)
     {
-        $products = Product::when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
+        $products = Product::query()
+            ->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
+            ->when($request->search, fn($q) => $q->where('name', 'like', "%{$request->search}%"))
             ->paginate(15)
             ->withQueryString();
 
         return Inertia::render('Admin/Products/Index', [
             'products' => ProductResource::collection($products),
             'categories' => CategoryResource::collection(Category::all()),
-            'filters' => $request->only(['category_id']),
+            'filters' => $request->only(['category_id', 'search']),
         ]);
     }
 

@@ -25,10 +25,23 @@ class DatabaseSeeder extends Seeder
         );
 
         // Создаем категории и товары
-        Category::factory(5)->create()->each(function ($category) {
+        $categories = [
+            'Электроника' => 'Гаджеты, смартфоны и аксессуары',
+            'Одежда' => 'Мужская и женская одежда',
+            'Дом и сад' => 'Товары для уюта и дачи',
+            'Спорт' => 'Спортивный инвентарь и питание',
+            'Книги' => 'Художественная и научная литература',
+        ];
+
+        foreach ($categories as $name => $description) {
+            $category = Category::create([
+                'name' => $name,
+                'description' => $description,
+            ]);
+
             Product::factory(10)->create([
                 'category_id' => $category->id,
             ]);
-        });
+        }
     }
 }
