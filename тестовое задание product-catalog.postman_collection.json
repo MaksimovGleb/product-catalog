@@ -1,0 +1,362 @@
+{
+  "info": {
+    "_postman_id": "3a11dfd5-7e35-4263-afd8-bd5319597b91",
+    "name": "тестовое задание product-catalog",
+    "description": "**тестовое задание product-catalog**\n\nAPI Эндпоинты (с использованием Resource-контроллеров и Form Request Validation):\n\n\\- **Товары (Products)**:\n\n- `GET /api/products` — список всех товаров с пагинацией (по 10-15 штук). Должен включать информацию о категории.\n    \n- `GET /api/products/{id}` — просмотр одного товара.\n    \n- `POST /api/products` — создание товара (требуется аутентификация).\n    \n- `PUT/PATCH /api/products/{id}` — обновление товара (требуется аутентификация).\n    \n- `DELETE /api/products/{id}` — удаление товара (требуется аутентификация).- **Категории (Categories)**:\n    \n- `GET /api/categories` — список всех категорий (без пагинации, для выпадающего списка).\n    \n\n3\\. Аутентификация (Sanctum):\n\n- Реализовать простую аутентификацию по токену для административных действий (создание, редактирование, удаление).\n    \n- Достаточно одного предустановленного пользователя (логин/пароль) или эндпоинта `POST /api/login`, который возвращает токен.\n    \n- Эндпоинты на чтение (GET) должны быть публичными.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "30192220"
+  },
+  "item": [
+    {
+      "name": "Список товаров (Публичный)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/products?page=1&category_id=019dda5d-63a3-70ea-aca0-e1242db1c2a4",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "category_id",
+              "value": "019dda5d-63a3-70ea-aca0-e1242db1c2a4"
+            }
+          ]
+        },
+        "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+      },
+      "response": []
+    },
+    {
+      "name": "Просмотр одного товара (Публичный)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products",
+            "{{product_id}}"
+          ]
+        },
+        "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+      },
+      "response": []
+    },
+    {
+      "name": "Категории (Публичный)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/categories",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "categories"
+          ]
+        },
+        "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+      },
+      "response": []
+    },
+    {
+      "name": "Авторизация (Получение токена)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();",
+              "if (response.token) {",
+              "    // Сохраняем токен в переменную коллекции",
+              "    pm.collectionVariables.set(\"bearer_token\", response.token);",
+              "    console.log(\"Токен сохранен!\");",
+              "}",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "packages": {},
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"password\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/login",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "login"
+          ]
+        },
+        "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+      },
+      "response": []
+    },
+    {
+      "name": "Создание товара (Нужен токен)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Successful POST request\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Новый товар\",\n    \"description\": \"Описание товара\",\n    \"price\": 999.99,\n    \"category_id\": \"019dda5d-63a3-70ea-aca0-e1242db1c2a4\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products"
+          ]
+        },
+        "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+      },
+      "response": []
+    },
+    {
+      "name": "Обновление товара (Нужен токен)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Successful PUT request\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Обновленное название\",\n    \"price\": 777,\n    \"category_id\": \"019dda5d-63a3-70ea-aca0-e1242db1c2a4\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products",
+            "{{product_id}}"
+          ]
+        },
+        "description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
+      },
+      "response": []
+    },
+    {
+      "name": "Удаление товара (Нужен токен)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Successful DELETE request\", function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/products/{{product_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products",
+            "{{product_id}}"
+          ]
+        },
+        "description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearer_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "pm.request.headers.add({\r",
+          "    key: 'Accept',\r",
+          "    value: 'application/json'\r",
+          "});\r",
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "id",
+      "value": "1"
+    },
+    {
+      "key": "base_url",
+      "value": "https://template.postman-echo.com"
+    },
+    {
+      "key": "product_id",
+      "value": ""
+    },
+    {
+      "value": ""
+    },
+    {
+      "key": "bearer_token",
+      "value": ""
+    }
+  ]
+}
