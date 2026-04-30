@@ -150,7 +150,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"password\"\n}",
+          "raw": "{\n    \"email\": \"Admin@mail.ru\",\n    \"password\": \"password\"\n}",
           "options": {
             "raw": {
               "language": "json"

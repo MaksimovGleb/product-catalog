@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         // Создаем администратора
         User::firstOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'Admin@mail.ru'],
             [
                 'name' => 'Admin',
                 'password' => Hash::make('password'),
