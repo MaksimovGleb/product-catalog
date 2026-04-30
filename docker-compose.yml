@@ -1,25 +1,53 @@
 services:
-    postgres:
-        image: 'postgres:15'
-        ports:
-            - '${FORWARD_DB_PORT:-5432}:5432'
-        environment:
-            POSTGRES_DB: '${DB_DATABASE}'
-            POSTGRES_USER: '${DB_USERNAME}'
-            POSTGRES_PASSWORD: '${DB_PASSWORD:-password}'
-        volumes:
-            - 'sail-postgres:/var/lib/postgresql/data'
-        networks:
-            - sail
-        healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
-            retries: 3
-            timeout: 5s
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: product-catalog-app
+    container_name: product-catalog-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - build_data:/var/www/public/build
+      - node_modules_data:/var/www/node_modules
+    networks:
+      - product-catalog
+
+  web:
+    image: nginx:alpine
+    container_name: product-catalog-web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www
+      - build_data:/var/www/public/build
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - product-catalog
+
+  db:
+    image: postgres:15-alpine
+    container_name: product-catalog-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-laravel}
+      POSTGRES_USER: ${DB_USERNAME:-laravel}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    networks:
+      - product-catalog
 
 networks:
-    sail:
-        driver: bridge
+  product-catalog:
+    driver: bridge
 
 volumes:
-    sail-postgres:
-        driver: local
+  dbdata:
+    driver: local
+  build_data:
+    driver: local
+  node_modules_data:
+    driver: local
