@@ -21,6 +21,16 @@ fi
 # Запуск миграций
 php artisan migrate --force
 
+# Запуск тестов
+echo "Running tests..."
+if php artisan test; then
+    echo "Tests passed successfully!"
+else
+    echo "Tests failed! Fix the errors before running the app."
+    # Можно раскомментировать строку ниже, чтобы контейнер не запускался при падении тестов
+    # exit 1
+fi
+
 # Автоматический сидинг, если база пуста
 USER_COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" | tr -d '\r\n')
 if [ "$USER_COUNT" = "0" ]; then
